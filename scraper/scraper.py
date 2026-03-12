@@ -1,54 +1,54 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
+from webdriver_manager.chrome import ChromeDriverManager # type: ignore
 import pandas as pd
 import time
 
-# start chrome driver
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service)
 
-url = "https://www.magicbricks.com/property-for-sale-in-bhubaneswar-pppfs"
+all_data = []
 
-driver.get(url)
+for page in range(1, 60):
 
-time.sleep(5)
+    url = f"https://www.magicbricks.com/property-for-sale-in-bhubaneswar-pppfs/page-{page}"
 
-properties = driver.find_elements(By.CLASS_NAME, "mb-srp__card")
+    print(f"Scraping page {page}")
 
-data = []
+    driver.get(url)
 
-for prop in properties:
+    time.sleep(5)
 
-    try:
-        price = prop.find_element(By.CLASS_NAME, "mb-srp__card__price").text
-    except:
-        price = None
+    properties = driver.find_elements(By.CLASS_NAME, "mb-srp__card")
 
-    try:
-        title = prop.find_element(By.CLASS_NAME, "mb-srp__card--title").text
-    except:
-        title = None
+    for prop in properties:
 
-    try:
-        area = prop.find_element(By.CLASS_NAME, "mb-srp__card__summary").text
-    except:
-        area = None
+        try:
+            price = prop.find_element(By.CLASS_NAME, "mb-srp__card__price").text
+        except:
+            price = None
 
-    data.append({
-        "price": price,
-        "title": title,
-        "area": area
-    })
+        try:
+            title = prop.find_element(By.CLASS_NAME, "mb-srp__card--title").text
+        except:
+            title = None
+
+        try:
+            area = prop.find_element(By.CLASS_NAME, "mb-srp__card__summary").text
+        except:
+            area = None
+
+        all_data.append({
+            "price": price,
+            "title": title,
+            "area": area
+        })
 
 driver.quit()
 
-df = pd.DataFrame(data)
+df = pd.DataFrame(all_data)
 
-print(df.head())
 print("Total properties scraped:", len(df))
 
-df.to_csv("properties.csv", index=False)
-
-print("Data saved successfully")
+df.to_csv("../data/properties.csv",index=False, encoding="utf-8-sig")
