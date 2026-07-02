@@ -1,0 +1,22 @@
+# python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# data (keep large scraped/raw files out of git)
+data/*.csv
+!data/.gitkeep
+
+# selenium driver cache
+.wdm/
+
+# jupyter
+.ipynb_checkpoints/
+
+# os/editor junk
+.DS_Store
+.vscode/
+
+# Scraped data
+data/
